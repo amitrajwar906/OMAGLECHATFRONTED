@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import toast from 'react-hot-toast';
+import { Card, Button, Avatar, Input } from '../components/ui';
+import { VscVerifiedFilled } from 'react-icons/vsc';
+
+const AdminDashboard = () => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('stats');
+  const [users, setUsers] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [broadcastImage, setBroadcastImage] = useState('');
+  const [broadcastButtonText, setBroadcastButtonText] = useState('');
+  const [broadcastButtonUrl, setBroadcastButtonUrl] = useState('');
+  const [sending, setSending] = useState(false);
+  const [search, setSearch] = useState('');
+  const [broadcasts, setBroadcasts] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      fetchData();
+    }
+  }, [user, activeTab]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === 'stats') {
+        const response = await api.get('/admin/stats');
+        setStats(response.data.data);
+      } else if (activeTab === 'users') {
+        const response = await api.get(`/admin/users?search=${search}`);
+        setUsers(response.data.data.users);
+      } else if (activeTab === 'groups') {
+        const response = await api.get('/admin/groups');
+        setGroups(response.data.data.groups);
+      } else if (activeTab === 'broadcast') {
+        const response = await api.get('/admin/broadcasts');
+        setBroadcasts(response.data.data.broadcasts);
+      }
+    } catch (error) {
+      toast.error('Failed to fetch data');
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await api.delete(`/admin/users/${userId}`);
+      toast.success('User deleted');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to delete user');
+    }
+  };
+
+  const handleChangeRole = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    try {
+      await api.put(`/admin/users/${userId}/role`, { role: newRole });
+      toast.success(`User role changed to ${newRole}`);
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to change role');
+    }
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    if (!window.confirm('Are you sure you want to delete this group?')) return;
+    try {
+      await api.delete(`/admin/groups/${groupId}`);
+      toast.success('Group deleted');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to delete group');
+    }
+  };
+
+  const handleBroadcast = async (e) => {
+    e.preventDefault();
+    if (!broadcastMessage.trim()) return;
+    
+    setSending(true);
+    try {
+      await api.post('/admin/broadcast', { 
+        content: broadcastMessage,
+        image: broadcastImage,
+        buttonText: broadcastButtonText,
+        buttonUrl: broadcastButtonUrl
+      });
+      toast.success('Broadcast sent to all users!');
+      setBroadcastMessage('');
+      setBroadcastImage('');
+      setBroadcastButtonText('');
+      setBroadcastButtonUrl('');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to send broadcast');
+    }
+    setSending(false);
+  };
+
+  const handleDeleteBroadcast = async (broadcastId) => {
+    if (!window.confirm('Are you sure you want to delete this broadcast?')) return;
+    try {
+      await api.delete(`/admin/broadcasts/${broadcastId}`);
+      toast.success('Broadcast deleted');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to delete broadcast');
+    }
+  };
+
+  if (user?.role !== 'admin') {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Card className="p-8">
+          <h2 className="text-xl font-bold text-red-500">Access Denied</h2>
+          <p className="mt-2">You do not have admin privileges.</p>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Admin Dashboard</h1>
+        
+        <div className="flex space-x-4 mb-6">
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`px-4 py-2 rounded-lg ${activeTab === 'stats' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+          >
+            Stats
+          </button>
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`px-4 py-2 rounded-lg ${activeTab === 'users' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+          >
+            Users
+          </button>
+          <button
+            onClick={() => setActiveTab('groups')}
+            className={`px-4 py-2 rounded-lg ${activeTab === 'groups' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+          >
+            Groups
+          </button>
+          <button
+            onClick={() => setActiveTab('broadcast')}
+            className={`px-4 py-2 rounded-lg ${activeTab === 'broadcast' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+          >
+            Broadcast
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-8 text-gray-500">Loading...</div>
+        ) : (
+          <>
+            {activeTab === 'stats' && stats && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="p-6">
+                  <h3 className="text-gray-500 text-sm">Total Users</h3>
+                  <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
+                </Card>
+                <Card className="p-6">
+                  <h3 className="text-gray-500 text-sm">Total Groups</h3>
+                  <p className="text-3xl font-bold mt-2">{stats.totalGroups}</p>
+                </Card>
+                <Card className="p-6">
+                  <h3 className="text-gray-500 text-sm">Total Messages</h3>
+                  <p className="text-3xl font-bold mt-2">{stats.totalMessages}</p>
+                </Card>
+                <Card className="p-6">
+                  <h3 className="text-gray-500 text-sm">Online Users</h3>
+                  <p className="text-3xl font-bold mt-2">{stats.onlineUsers}</p>
+                </Card>
+              </div>
+            )}
+
+            {activeTab === 'users' && (
+              <div>
+                <div className="mb-4">
+                  <Input
+                    type="text"
+                    placeholder="Search users..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && fetchData()}
+                    className="max-w-md"
+                  />
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                      {users.map((u) => (
+                        <tr key={u.id}>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center">
+                              <Avatar src={u.avatar} name={u.username} />
+                              <span className="ml-2 font-medium flex items-center gap-1">
+                                {u.username}
+                                {u.role === 'admin' && (
+                                  <VscVerifiedFilled className="text-blue-500 w-4 h-4" />
+                                )}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-gray-500">{u.email}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 text-xs rounded-full ${u.isOnline ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                              {u.isOnline ? 'Online' : 'Offline'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 text-xs rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
+                              {u.role || 'user'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <Button
+                              size="sm"
+                              variant={u.role === 'admin' ? 'secondary' : 'primary'}
+                              onClick={() => handleChangeRole(u.id, u.role)}
+                              className="mr-2"
+                            >
+                              {u.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              onClick={() => handleDeleteUser(u.id)}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'groups' && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Group Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Admin</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Members</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {groups.map((g) => (
+                      <tr key={g.id}>
+                        <td className="px-4 py-3 font-medium">{g.name}</td>
+                        <td className="px-4 py-3 text-gray-500">{g.adminName}</td>
+                        <td className="px-4 py-3">{g.memberCount}</td>
+                        <td className="px-4 py-3 text-gray-500">{g.createdAt ? new Date(g.createdAt).toLocaleDateString() : '-'}</td>
+                        <td className="px-4 py-3">
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => handleDeleteGroup(g.id)}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === 'broadcast' && (
+              <div className="space-y-6">
+                <Card className="p-6 max-w-2xl">
+                  <h2 className="text-xl font-bold mb-4">Broadcast Message</h2>
+                  <p className="text-gray-500 mb-4">Send a message to all registered users.</p>
+                  <form onSubmit={handleBroadcast}>
+                    <textarea
+                      value={broadcastMessage}
+                      onChange={(e) => setBroadcastMessage(e.target.value)}
+                      placeholder="Enter your broadcast message..."
+                      className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 mb-4"
+                      rows={4}
+                    />
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Image URL (optional)
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="https://example.com/image.jpg"
+                        value={broadcastImage}
+                        onChange={(e) => setBroadcastImage(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Button Text (optional)
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Click Here"
+                          value={broadcastButtonText}
+                          onChange={(e) => setBroadcastButtonText(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Button URL
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="https://example.com"
+                          value={broadcastButtonUrl}
+                          onChange={(e) => setBroadcastButtonUrl(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={sending || !broadcastMessage.trim()}>
+                      {sending ? 'Sending...' : 'Send Broadcast'}
+                    </Button>
+                  </form>
+                </Card>
+
+                <Card className="p-6">
+                  <h2 className="text-xl font-bold mb-4">Manage Broadcasts</h2>
+                  {broadcasts.length === 0 ? (
+                    <p className="text-gray-500">No broadcasts yet.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {broadcasts.map((broadcast) => (
+                        <div key={broadcast.id} className="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">
+                              📢 {broadcast.sender?.username || 'Admin'}
+                            </p>
+                            {broadcast.image && (
+                              <img src={broadcast.image} alt="Broadcast" className="max-w-full h-auto rounded-lg mb-2" style={{ maxHeight: '100px' }} />
+                            )}
+                            <p className="text-gray-900 dark:text-white">{broadcast.content}</p>
+                            {broadcast.buttonText && broadcast.buttonUrl && (
+                              <p className="text-sm text-blue-500 mt-1">🔗 Button: {broadcast.buttonText}</p>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">
+                              {broadcast.createdAt ? new Date(broadcast.createdAt).toLocaleString() : '-'}
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => handleDeleteBroadcast(broadcast.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

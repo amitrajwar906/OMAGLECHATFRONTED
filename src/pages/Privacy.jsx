@@ -18,7 +18,7 @@ const Privacy = () => {
                 <span className="text-2xl font-bold text-primary-600">OmagleChat</span>
               </Link>
               <div className="flex items-center space-x-6">
-                <Link to="/chat" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
                 <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">About</Link>
                 <Link to="/login" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Login</Link>
               </div>

@@ -168,7 +168,7 @@ const BlogPost = () => {
                 <span className="text-2xl font-bold text-primary-600">OmagleChat</span>
               </Link>
               <div className="flex items-center space-x-6">
-                <Link to="/chat" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
                 <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">About</Link>
                 <Link to="/blog" className="text-primary-600 dark:text-primary-400 font-medium">Blog</Link>
                 <Link to="/login" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Login</Link>
@@ -201,14 +201,11 @@ const BlogPost = () => {
           <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Related Topics</h3>
             <div className="flex flex-wrap gap-2">
-              <Link to="/chat" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900 transition">
+              <Link to="/login" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900 transition">
                 Start Chatting
               </Link>
               <Link to="/rooms" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900 transition">
                 Chat Rooms
-              </Link>
-              <Link to="/random-video-chat" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900 transition">
-                Video Chat
               </Link>
             </div>
           </div>

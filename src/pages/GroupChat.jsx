@@ -31,6 +31,7 @@ const GroupChat = () => {
   const [deletingGroup, setDeletingGroup] = useState(false);
   const [addingUser, setAddingUser] = useState(false);
   const [sidebarChats, setSidebarChats] = useState({ private: [], groups: [] });
+  const [replyTo, setReplyTo] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -120,15 +121,22 @@ const GroupChat = () => {
   };
 
   const handleSendMessage = async (messageContent) => {
-    if (!messageContent || !messageContent.trim()) return;
+    // Handle both string and object (when replying or sending image)
+    let content = typeof messageContent === 'string' ? messageContent : messageContent.content;
+    let replyToId = typeof messageContent === 'object' ? messageContent.replyToId : replyTo?.id;
+    let isImage = typeof messageContent === 'object' ? messageContent.isImage : false;
+    
+    if (!content || !content.trim()) return;
 
     const tempId = Date.now();
     const tempMessage = {
       id: tempId,
-      content: messageContent.trim(),
+      content: content.trim(),
       senderId: user?.id,
       sender: user,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      replyTo: replyTo,
+      isImage: isImage
     };
     
     setMessages(prev => [...prev, tempMessage]);
@@ -136,9 +144,11 @@ const GroupChat = () => {
 
     try {
       const response = await api.post('/messages', {
-        content: messageContent.trim(),
+        content: content.trim(),
         chatType: 'group',
-        chatRoom: groupId
+        chatRoom: groupId,
+        replyToId: replyToId,
+        isImage: isImage
       });
 
       const rawData = response.data;
@@ -157,6 +167,7 @@ const GroupChat = () => {
       if (messageData && messageData.id) {
         setMessages(prev => prev.map(m => m.id === tempId ? messageData : m));
       }
+      setReplyTo(null);
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => prev.filter(m => m.id !== tempId));
@@ -281,6 +292,14 @@ const GroupChat = () => {
     if (groupId) navigate(`/group/${groupId}`);
   };
 
+  const handleReply = (message) => {
+    setReplyTo(message);
+  };
+
+  const handleCancelReply = () => {
+    setReplyTo(null);
+  };
+
   const isAdmin = group?.admin === user?.id || group?.admin?.id === user?.id || String(group?.admin) === String(user?.id);
 
   let baseActions = [
@@ -386,6 +405,7 @@ const GroupChat = () => {
               messages={messages}
               currentUser={user}
               loading={loading}
+              onReply={handleReply}
             />
             <div ref={messagesEndRef} />
           </div>
@@ -398,6 +418,9 @@ const GroupChat = () => {
               onTypingStop={handleTypingStop}
               placeholder={`Message ${group?.name || 'group'}...`}
               disabled={!group}
+              members={group?.members || []}
+              replyTo={replyTo}
+              onCancelReply={handleCancelReply}
             />
           </div>
         </div>

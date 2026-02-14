@@ -18,11 +18,12 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
-import ChatPage from './pages/ChatPage';
+
 import Rooms from './pages/Rooms';
 import FreeOnlineChat from './pages/FreeOnlineChat';
-import RandomVideoChat from './pages/RandomVideoChat';
 import AdminDashboard from './pages/AdminDashboard';
+import Support from './pages/Support';
+import Contact from './pages/Contact';
 
 const RootRedirect = () => {
   const { isAuthenticated } = useAuth();
@@ -87,10 +88,10 @@ function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/chat" element={<ChatPage />} />
               <Route path="/rooms" element={<Rooms />} />
               <Route path="/free-online-chat" element={<FreeOnlineChat />} />
-              <Route path="/random-video-chat" element={<RandomVideoChat />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/contact" element={<Contact />} />
             </Routes>
             <Toaster
               position="top-right"

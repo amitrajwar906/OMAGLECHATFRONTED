@@ -108,6 +108,9 @@ const MessageList = ({
        prevDate.toDateString() !== currDate.toDateString());
     const messageKey = message.id || message._id || `msg-${index}`;
     
+    // Find the message being replied to
+    const replyToMessage = message.replyToId ? messages.find(m => m.id === message.replyToId || m._id === message.replyToId) : null;
+    
     return (
       <div key={messageKey}>
         {/* Date divider */}
@@ -159,6 +162,23 @@ const MessageList = ({
               {isBroadcast && (
                 <div className="text-xs text-purple-200 mb-1">📢 Admin Broadcast</div>
               )}
+              
+              {/* Reply preview */}
+              {replyToMessage && (
+                <div className={`mb-2 px-3 py-2 rounded-lg border-l-4 ${
+                  isBroadcast || isOwn 
+                    ? 'bg-white/10 border-purple-300' 
+                    : 'bg-gray-100 dark:bg-gray-700 border-purple-500'
+                }`}>
+                  <p className={`text-xs ${isBroadcast || isOwn ? 'text-purple-200' : 'text-purple-600 dark:text-purple-400'} font-medium`}>
+                    @{replyToMessage.sender?.username || 'Unknown'}
+                  </p>
+                  <p className={`text-sm truncate ${isBroadcast || isOwn ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}>
+                    {replyToMessage.content}
+                  </p>
+                </div>
+              )}
+
               {isBroadcast && message.image && (
                 <img 
                   src={message.image} 
@@ -199,7 +219,25 @@ const MessageList = ({
                 </div>
               ) : (
                 <>
-                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                  {/* Check if message is an image */}
+                  {message.isImage ? (
+                    <div className="mt-1">
+                      <img 
+                        src={message.content} 
+                        alt="Shared" 
+                        className="max-w-full h-auto rounded-lg"
+                        style={{ maxHeight: '300px' }}
+                        onError={(e) => { 
+                          e.target.style.display = 'none'; 
+                          if (e.target.parentElement) {
+                            e.target.parentElement.innerHTML = `<a href="${message.content}" target="_blank" class="text-purple-500 underline text-sm">${message.content.substring(0, 30)}...</a>`;
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                  )}
                   
                   {isBroadcast && message.buttonText && message.buttonUrl && (
                     <a
@@ -211,6 +249,22 @@ const MessageList = ({
                       {message.buttonText}
                     </a>
                   )}
+                  
+                  {/* Message footer with time and reply button */}
+                  <div className="flex items-center justify-end gap-2 mt-1">
+                    <span className={`text-xs ${isOwn ? 'text-purple-200' : 'text-gray-400'}`}>
+                      {formatTime(message.timestamp)}
+                    </span>
+                    <button
+                      onClick={() => onReply && onReply(message)}
+                      className={`p-1 rounded hover:bg-white/20 transition-colors ${isOwn ? 'text-purple-200' : 'text-gray-400 hover:text-purple-500'}`}
+                      title="Reply"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                      </svg>
+                    </button>
+                  </div>
                   </>
               )}
             </div>
@@ -235,23 +289,23 @@ const MessageList = ({
             )}
           </div>
           
-          {/* Message actions */}
-          {selectedMessage === message.id && isOwn && !editingMessageId && (
-            <div className={`absolute ${isOwn ? 'right-0' : 'left-0'} top-0 transform ${isOwn ? 'translate-x-full' : '-translate-x-full'} bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10`}>
+          {/* Message actions - show on hover */}
+          {selectedMessage === message.id && !editingMessageId && isOwn && (
+            <div className={`absolute top-0 ${isOwn ? 'right-0' : 'left-0'} -mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20 flex`}>
               <button
                 onClick={() => handleEdit(message)}
-                className="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                className="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 Edit
               </button>
               <button
                 onClick={() => onDelete && onDelete(message.id)}
-                className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Delete

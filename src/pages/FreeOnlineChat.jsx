@@ -19,7 +19,7 @@ const FreeOnlineChat = () => {
                 <span className="text-2xl font-bold text-primary-600">OmagleChat</span>
               </Link>
               <div className="flex items-center space-x-6">
-                <Link to="/chat" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
                 <Link to="/rooms" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Rooms</Link>
                 <Link to="/free-online-chat" className="text-primary-600 dark:text-primary-400 font-medium">Free Chat</Link>
                 <Link to="/login" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Login</Link>
@@ -36,7 +36,7 @@ const FreeOnlineChat = () => {
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Connect with strangers worldwide through free online chat. No registration, no fees - just instant conversations with people from around the globe.
             </p>
-            <Link to="/chat" className="inline-block px-8 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition text-lg shadow-lg">
+            <Link to="/login" className="inline-block px-8 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition text-lg shadow-lg">
               Start Free Chat Now
             </Link>
           </div>
@@ -91,7 +91,7 @@ const FreeOnlineChat = () => {
             <p className="text-primary-100 text-lg mb-8 max-w-2xl mx-auto">
               Join thousands of people who use OmagleChat every day to connect, chat, and make new friends.
             </p>
-            <Link to="/chat" className="inline-block px-8 py-4 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition">
+            <Link to="/login" className="inline-block px-8 py-4 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 transition">
               Start Chatting Now
             </Link>
           </div>

@@ -30,7 +30,7 @@ const Rooms = () => {
                 <span className="text-2xl font-bold text-primary-600">OmagleChat</span>
               </Link>
               <div className="flex items-center space-x-6">
-                <Link to="/chat" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
                 <Link to="/rooms" className="text-primary-600 dark:text-primary-400 font-medium">Rooms</Link>
                 <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">About</Link>
                 <Link to="/login" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Login</Link>
@@ -51,7 +51,7 @@ const Rooms = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {rooms.map((room) => (
-              <Link key={room.id} to={`/chat?room=${room.id}`} className="block">
+              <Link key={room.id} to={`/login?room=${room.id}`} className="block">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
                   <room.icon className="w-10 h-10 text-primary-600 mb-4" />
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{room.name}</h3>

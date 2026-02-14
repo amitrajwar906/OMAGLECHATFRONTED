@@ -69,7 +69,7 @@ const Blog = () => {
                 <span className="text-2xl font-bold text-primary-600">OmagleChat</span>
               </Link>
               <div className="flex items-center space-x-6">
-                <Link to="/chat" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">Chat Now</Link>
                 <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 transition">About</Link>
                 <Link to="/blog" className="text-primary-600 dark:text-primary-400 font-medium">Blog</Link>
                 <Link to="/login" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Login</Link>
@@ -122,7 +122,7 @@ const Blog = () => {
             <p className="text-primary-100 text-lg mb-8 max-w-2xl mx-auto">
               Put these tips into practice and have amazing conversations on OmagleChat today!
             </p>
-            <Link to="/chat" className="px-8 py-4 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition">
+            <Link to="/login" className="px-8 py-4 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition">
               Start Free Chat
             </Link>
           </div>
@@ -138,9 +138,8 @@ const Blog = () => {
               <div>
                 <h4 className="font-semibold mb-4">Quick Links</h4>
                 <ul className="space-y-2 text-gray-400">
-                  <li><Link to="/chat" className="hover:text-white transition">Chat Now</Link></li>
+                  <li><Link to="/login" className="hover:text-white transition">Chat Now</Link></li>
                   <li><Link to="/rooms" className="hover:text-white transition">Chat Rooms</Link></li>
-                  <li><Link to="/random-video-chat" className="hover:text-white transition">Video Chat</Link></li>
                 </ul>
               </div>
               <div>

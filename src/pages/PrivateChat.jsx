@@ -22,6 +22,7 @@ const PrivateChat = () => {
   const [typingUsers, setTypingUsers] = useState([]);
   const [showUserInfoModal, setShowUserInfoModal] = useState(false);
   const [sidebarChats, setSidebarChats] = useState({ private: [], groups: [] });
+  const [replyTo, setReplyTo] = useState(null);
 
   useEffect(() => {
     if (!userId || !socket) return;
@@ -128,12 +129,19 @@ const PrivateChat = () => {
     }
   };
 
-  const handleSendMessage = async (content) => {
+  const handleSendMessage = async (messageContent) => {
+    // Handle both string and object (when replying or sending image)
+    let content = typeof messageContent === 'string' ? messageContent : messageContent.content;
+    let replyToId = typeof messageContent === 'object' ? messageContent.replyToId : null;
+    let isImage = typeof messageContent === 'object' ? messageContent.isImage : false;
+    
     try {
       const response = await api.post('/messages', {
         content,
         chatType: 'private',
-        chatRoom: userId
+        chatRoom: userId,
+        replyToId,
+        isImage
       });
       
       const messageData = response.data.data?.message || response.data.data || response.data;
@@ -164,6 +172,14 @@ const PrivateChat = () => {
     } catch (error) {
       toast.error('Failed to delete message');
     }
+  };
+
+  const handleReply = (message) => {
+    setReplyTo(message);
+  };
+
+  const handleCancelReply = () => {
+    setReplyTo(null);
   };
 
   const handleTypingStart = () => {
@@ -271,6 +287,7 @@ const PrivateChat = () => {
             currentUser={user}
             onEdit={handleEditMessage}
             onDelete={handleDeleteMessage}
+            onReply={handleReply}
             loading={loading}
           />
         </div>
@@ -283,6 +300,8 @@ const PrivateChat = () => {
           placeholder={`Message ${chatUser?.username || 'user'}...`}
           disabled={!chatUser}
           className="lg:ml-80"
+          replyTo={replyTo}
+          onCancelReply={handleCancelReply}
         />
       </div>
 

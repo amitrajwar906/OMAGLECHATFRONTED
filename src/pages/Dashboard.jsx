@@ -22,7 +22,8 @@ const Dashboard = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [profileForm, setProfileForm] = useState({
     username: authUser?.username || '',
-    bio: authUser?.bio || ''
+    bio: authUser?.bio || '',
+    avatar: authUser?.avatar || ''
   });
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [groupForm, setGroupForm] = useState({
@@ -199,21 +200,18 @@ const Dashboard = () => {
     }
     setUpdatingProfile(true);
     try {
-      alert('Sending update request...');
-      console.log('Updating profile with:', { username: profileForm.username, bio: profileForm.bio });
       const res = await api.put('/users/profile', {
         username: profileForm.username,
-        bio: profileForm.bio
+        bio: profileForm.bio,
+        avatar: profileForm.avatar
       });
-      alert('Response: ' + JSON.stringify(res.data));
-      console.log('Update response:', res.data);
       if (res.data.success) {
         const updatedUser = res.data.data?.user;
         updateUser(updatedUser);
         toast.success('Profile updated!');
         setShowEditProfileModal(false);
       } else {
-        alert('Error: ' + res.data.message);
+        toast.error(res.data.message || 'Failed to update profile');
       }
     } catch (error) {
       alert('Error: ' + (error.message || 'Unknown error'));
@@ -632,6 +630,29 @@ const Dashboard = () => {
         </Modal.Header>
         <Modal.Body>
           <div className="space-y-4">
+            {/* Avatar Preview */}
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <img
+                  src={profileForm.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${profileForm.username}`}
+                  alt="Avatar"
+                  className="w-24 h-24 rounded-full border-4 border-purple-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Profile Picture URL
+              </label>
+              <input
+                type="url"
+                value={profileForm.avatar}
+                onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                placeholder="https://example.com/avatar.jpg"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white"
+              />
+              <p className="text-xs text-gray-500 mt-1">Paste an image URL for your profile picture</p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Username

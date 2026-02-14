@@ -252,9 +252,9 @@ const Sidebar = ({
               <div className="p-2">
                 {filteredChats.length === 0 ? <p className="text-center text-gray-500 py-8">No chats</p> : filteredChats.map(chat => (
                   <div key={chat.id || chat._id} onClick={() => { onChatSelect?.(chat); onClose(); }} className={`flex items-center p-3 rounded-lg cursor-pointer ${currentChatId === (chat.id || chat._id) ? 'bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-                    <Avatar src={chat.avatar || chat.user?.avatar} alt={chat.name || chat.user?.username} status={chat.isOnline || chat.user?.isOnline ? 'online' : 'offline'} size="md" />
+                    <Avatar src={chat.avatar || chat.user?.avatar} alt={chat.name || chat.user?.username || 'User'} fallback={chat.name?.charAt(0) || chat.user?.username?.charAt(0) || 'U'} status={chat.isOnline || chat.user?.isOnline ? 'online' : 'offline'} size="md" />
                     <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.name || chat.user?.username}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.name || chat.user?.username || 'Unknown User'}</p>
                     </div>
                   </div>
                 ))}
@@ -308,9 +308,9 @@ const Sidebar = ({
             {showFriendsPanel ? <FriendsPanel /> : activeTab === 'chats' ? (
               <div className="p-2">
                 {filteredChats.length === 0 ? <p className="text-center text-gray-500 py-8">No chats</p> : filteredChats.map(chat => (
-                  <div key={chat.id} onClick={() => { onChatSelect?.(chat); onClose(); }} className="flex items-center p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <Avatar src={chat.user?.avatar} alt={chat.user?.username} status={chat.user?.isOnline ? 'online' : 'offline'} size="md" />
-                    <div className="ml-3 flex-1 min-w-0"><p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.user?.username}</p></div>
+                  <div key={chat.id || chat._id} onClick={() => { onChatSelect?.(chat); onClose(); }} className={`flex items-center p-3 rounded-lg cursor-pointer ${currentChatId === (chat.id || chat._id) ? 'bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                    <Avatar src={chat.avatar || chat.user?.avatar} alt={chat.name || chat.user?.username || 'User'} status={chat.isOnline || chat.user?.isOnline ? 'online' : 'offline'} size="md" />
+                    <div className="ml-3 flex-1 min-w-0"><p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.name || chat.user?.username || 'Unknown'}</p></div>
                   </div>
                 ))}
               </div>

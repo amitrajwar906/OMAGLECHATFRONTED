@@ -7,6 +7,7 @@ import { Card, Button, Avatar, LoadingSpinner, Modal, Badge } from '../component
 import { MessageList, MessageInput } from '../components/chat';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const PrivateChat = () => {
   const { userId } = useParams();
@@ -227,7 +228,14 @@ const PrivateChat = () => {
   ];
 
   return (
-    <Layout
+    <>
+      <SEO 
+        title={chatUser?.username ? `Chat with ${chatUser.username}` : 'Private Chat'} 
+        description={chatUser ? `Send private messages to ${chatUser.username} on OmagleChat. Enjoy secure and instant messaging.` : 'Private messaging on OmagleChat.'}
+        url={`/private/${userId}`}
+        noIndex={true}
+      />
+      <Layout
       sidebarOpen={sidebarOpen}
       onToggleSidebar={() => setSidebarOpen(false)}
       sidebar={
@@ -352,6 +360,7 @@ const PrivateChat = () => {
         </svg>
       </button>
     </Layout>
+    </>
   );
 };
 

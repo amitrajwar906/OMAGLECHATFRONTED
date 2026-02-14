@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Layout, Header, Sidebar, Button, Card, Avatar, Badge, Modal, Input } from '../components/ui';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const GroupSettings = () => {
   const { groupId } = useParams();
@@ -158,7 +159,14 @@ const GroupSettings = () => {
   }
 
   return (
-    <Layout
+    <>
+      <SEO 
+        title={group?.name ? `${group.name} Settings` : 'Group Settings'} 
+        description={`Manage settings for ${group?.name || 'your group'} on OmagleChat. Edit group name, description, members, and more.`}
+        url={`/group/${groupId}/settings`}
+        noIndex={true}
+      />
+      <Layout
       sidebarOpen={false}
       sidebar={
         <Sidebar
@@ -509,6 +517,7 @@ const GroupSettings = () => {
         </Modal.Footer>
       </Modal>
     </Layout>
+    </>
   );
 };
 

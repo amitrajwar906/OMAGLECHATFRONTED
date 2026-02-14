@@ -1,0 +1,54 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f172a"></stop>
+      <stop offset="100%" stop-color="#020617"></stop>
+    </radialGradient>
+
+    <!-- Neon Blue Glow -->
+    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+
+    <!-- Neon Pink Glow -->
+    <filter id="pinkGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Circle Background -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)" stroke="#0ea5e9" stroke-width="4"></circle>
+
+  <!-- Outer Neon Ring -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="#22d3ee" stroke-width="6" filter="url(#blueGlow)"></circle>
+
+  <!-- Chat Bubble Icon -->
+  <path d="M180 220
+           Q180 170 256 170
+           Q332 170 332 220
+           Q332 270 256 270
+           Q240 300 210 310
+           Q220 285 220 270
+           Q180 270 180 220 Z" fill="#ec4899" filter="url(#pinkGlow)"></path>
+
+  <!-- Chat Dots -->
+  <circle cx="230" cy="220" r="8" fill="white"></circle>
+  <circle cx="256" cy="220" r="8" fill="white"></circle>
+  <circle cx="282" cy="220" r="8" fill="white"></circle>
+
+  <!-- OM initial -->
+  <text x="256" y="350" text-anchor="middle" font-family="Arial" font-size="90" font-weight="bold" fill="#22d3ee" filter="url(#blueGlow)">
+    OM
+  </text>
+
+</svg>

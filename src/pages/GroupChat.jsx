@@ -6,6 +6,7 @@ import { Layout, Header, Sidebar, Button, Avatar, Badge, Modal, Input } from '..
 import { MessageList, MessageInput } from '../components/chat/index.js';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const GroupChat = () => {
   const { groupId } = useParams();
@@ -345,7 +346,14 @@ const GroupChat = () => {
   }
 
     return (
-      <Layout
+      <>
+        <SEO 
+          title={group?.name ? `Group: ${group.name}` : 'Group Chat'} 
+          description={group?.description || `Join the group conversation on OmagleChat. Connect with members and enjoy group messaging.`}
+          url={`/group/${groupId}`}
+          noIndex={true}
+        />
+        <Layout
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen(false)}
         sidebar={
@@ -632,6 +640,7 @@ const GroupChat = () => {
           </Modal.Body>
         </Modal>
     </Layout>
+    </>
   );
 };
 

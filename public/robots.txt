@@ -1,0 +1,72 @@
+# robots.txt for OmagleChat
+# https://omaglechat.com
+
+User-agent: *
+Allow: /
+Allow: /chat
+Allow: /rooms
+Allow: /free-online-chat
+Allow: /random-video-chat
+Allow: /about
+Allow: /blog
+Allow: /blog/*
+Allow: /login
+Allow: /register
+
+# Sitemap
+Sitemap: https://omaglechat.com/sitemap.xml
+Sitemap: https://omaglechat.com/sitemap-news.xml
+
+# Crawl-delay (optional, for polite crawling)
+Crawl-delay: 1
+
+# User-agent specific rules
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard
+Disallow: /group/
+Disallow: /private/
+Disallow: /admin
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /logo.png
+Allow: /og-image.png
+
+User-agent: Googlebot-News
+Allow: /blog
+
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard
+Disallow: /group/
+Disallow: /private/
+Disallow: /admin
+
+User-agent: Slurp
+Allow: /
+Disallow: /dashboard
+Disallow: /group/
+Disallow: /private/
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+Disallow: /dashboard
+Disallow: /group/
+Disallow: /private/
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Host directive
+Host: https://omaglechat.com

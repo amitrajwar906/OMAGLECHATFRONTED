@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -11,8 +12,17 @@ import Dashboard from './pages/Dashboard';
 import GroupChat from './pages/GroupChat';
 import PrivateChat from './pages/PrivateChat';
 import GroupSettings from './pages/GroupSettings';
-import AdminDashboard from './pages/AdminDashboard';
 import LandingPage from './pages/LandingPage';
+import About from './pages/About';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import ChatPage from './pages/ChatPage';
+import Rooms from './pages/Rooms';
+import FreeOnlineChat from './pages/FreeOnlineChat';
+import RandomVideoChat from './pages/RandomVideoChat';
+import AdminDashboard from './pages/AdminDashboard';
 
 const RootRedirect = () => {
   const { isAuthenticated } = useAuth();
@@ -21,7 +31,8 @@ const RootRedirect = () => {
 
 function App() {
   return (
-    <ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
       <AuthProvider>
         <SocketProvider>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -61,6 +72,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Admin Dashboard */}
               <Route
                 path="/admin"
                 element={
@@ -70,6 +82,15 @@ function App() {
                 }
               />
               <Route path="/" element={<RootRedirect />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/rooms" element={<Rooms />} />
+              <Route path="/free-online-chat" element={<FreeOnlineChat />} />
+              <Route path="/random-video-chat" element={<RandomVideoChat />} />
             </Routes>
             <Toaster
               position="top-right"
@@ -103,7 +124,8 @@ function App() {
         </Router>
       </SocketProvider>
     </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 

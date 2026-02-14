@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button, Input, Card, LoadingSpinner, ThemeToggle } from '../components/ui';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -103,6 +105,11 @@ const Register = () => {
     
     if (!validateForm()) return;
     
+    if (!termsAccepted) {
+      toast.error('Please accept the Terms of Service and Privacy Policy');
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -119,7 +126,13 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+    <>
+      <SEO 
+        title="Create Account" 
+        description="Join OmagleChat today! Create a free account to connect with friends, create group chats, and enjoy seamless messaging."
+        url="/register"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-300/20 rounded-full blur-3xl"></div>
@@ -284,23 +297,35 @@ const Register = () => {
               disabled={loading}
             />
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="terms"
-                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                required
-              />
-              <label htmlFor="terms" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-start" onClick={() => setTermsAccepted(!termsAccepted)} style={{ cursor: 'pointer' }}>
+              <div style={{
+                width: '24px',
+                height: '24px',
+                border: termsAccepted ? 'none' : '2px solid #6b7280',
+                borderRadius: '4px',
+                backgroundColor: termsAccepted ? '#3b82f6' : '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: '2px'
+              }}>
+                {termsAccepted && (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M13.5 4.5L6 13.5L2.5 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+              <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
                 I agree to the{' '}
-                <Link to="/terms" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 hover:underline">
+                <Link to="/terms" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 hover:underline">
+                <Link to="/privacy" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-medium">
                   Privacy Policy
                 </Link>
-              </label>
+              </span>
             </div>
 
             <Button
@@ -377,6 +402,7 @@ const Register = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

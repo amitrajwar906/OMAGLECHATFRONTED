@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { Layout, Header, Sidebar } from '../components/layout';
 import { Card, Button, Avatar, Badge, LoadingSpinner, Modal } from '../components/ui';
 import { VscVerifiedFilled } from 'react-icons/vsc';
+import SEO from '../components/SEO';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ const Dashboard = () => {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [profileForm, setProfileForm] = useState({
     username: authUser?.username || '',
@@ -36,6 +36,20 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const groupsPerPage = 16;
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filter groups by search query
+  const filteredGroups = publicGroups.filter(group => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      (group.name && group.name.toLowerCase().includes(query)) ||
+      (group.id && group.id.toString().includes(query)) ||
+      (group._id && group._id.toString().includes(query))
+    );
+  });
   
   const { user } = useAuth();
   const { onlineUsers } = useSocket();
@@ -212,7 +226,14 @@ const Dashboard = () => {
   };
 
   return (
-    <Layout
+    <>
+      <SEO 
+        title="Dashboard" 
+        description="Your OmagleChat dashboard. Manage your chats, groups, friends, and profile settings all in one place."
+        url="/dashboard"
+        noIndex={true}
+      />
+      <Layout
       sidebarOpen={sidebarOpen}
       onToggleSidebar={() => setSidebarOpen(false)}
       sidebar={
@@ -321,9 +342,35 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Search Groups */}
+            <div className="mb-6 px-4">
+              <div className="relative max-w-md mx-auto">
+                <input
+                  type="text"
+                  placeholder="Search groups by name or ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm"
+                />
+                <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12 px-4">
-              {publicGroups.length > 0 ? (
-                publicGroups.map(group => {
+              {filteredGroups.length > 0 ? (
+                filteredGroups.map(group => {
                   const isMember = chats.groups.some(g => (g._id || g.id) === (group.id || group._id));
                   const memberCount = group.members?.length || 0;
                   
@@ -407,8 +454,22 @@ const Dashboard = () => {
                     </div>
                   );
                 })
+              ) : searchQuery ? (
+                <div className="col-span-full text-center py-20">
+                  <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+                    <svg className="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    No Groups Found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    No groups match "{searchQuery}". Try a different search.
+                  </p>
+                </div>
               ) : (
-                <div className="text-center py-20">
+                <div className="col-span-full text-center py-20">
                   <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                     <svg className="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -704,6 +765,7 @@ const Dashboard = () => {
         </svg>
       </button>
     </Layout>
+    </>
   );
 };
 

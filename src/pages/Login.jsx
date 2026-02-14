@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button, Input, Card, LoadingSpinner, ThemeToggle } from '../components/ui';
 import toast from 'react-hot-toast';
+import SEO from '../components/SEO';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [rememberMe, setRememberMe] = useState(false);
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -73,7 +75,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+    <>
+      <SEO 
+        title="Login" 
+        description="Sign in to your OmagleChat account to connect with friends, join group chats, and start messaging instantly."
+        url="/login"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-300/20 rounded-full blur-3xl"></div>
@@ -138,19 +146,32 @@ const Login = () => {
             />
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                />
-                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center" onClick={() => setRememberMe(!rememberMe)} style={{ cursor: 'pointer' }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  border: rememberMe ? 'none' : '2px solid #6b7280',
+                  borderRadius: '4px',
+                  backgroundColor: rememberMe ? '#3b82f6' : '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {rememberMe && (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M13.5 4.5L6 13.5L2.5 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
                   Remember me
                 </span>
-              </label>
+              </div>
               
               <Link
                 to="/forgot-password"
-                className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 hover:underline"
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline"
               >
                 Forgot password?
               </Link>
@@ -230,6 +251,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
